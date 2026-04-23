@@ -219,9 +219,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div class="title-logo">Java RPG</div>
   <div class="title-sub">문제를 맞혀서 괴물을 물리치시오</div>
   <div class="boss-preview">
-    <div class="boss-card"><span class="boss-emoji">🗿</span><div class="boss-stage">Stage 1</div><div class="boss-name">변수 골렘</div></div>
-    <div class="boss-card"><span class="boss-emoji">🐉</span><div class="boss-stage">Stage 2</div><div class="boss-name">객체 드래곤</div></div>
-    <div class="boss-card"><span class="boss-emoji">👹</span><div class="boss-stage">Stage 3</div><div class="boss-name">컬렉션 마왕</div></div>
+    <div class="boss-card"><span class="boss-emoji">🗿</span><div class="boss-stage">Stage 1</div><div class="boss-name">변수 빌런</div></div>
+    <div class="boss-card"><span class="boss-emoji">🐉</span><div class="boss-stage">Stage 2</div><div class="boss-name">객체 빌런</div></div>
+    <div class="boss-card"><span class="boss-emoji">👹</span><div class="boss-stage">Stage 3</div><div class="boss-name">컬렉션 빌런</div></div>
   </div>
   <div class="start-form">
     <h2>닉네임을 입력하고 시작하세요</h2>
@@ -264,8 +264,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="player-hp-text">HP <span id="playerHpText">100</span> / 100</div>
     </div>
     <div class="player-section" style="border-color:rgba(248,113,113,.2);">
-      <div class="player-label" style="color:var(--red);">보스</div>
-      <div class="player-name" id="bossNameDisplay" style="color:var(--red);">변수 골렘</div>
+      <div class="player-label" style="color:var(--red);">빌런</div>
+      <div class="player-name" id="bossNameDisplay" style="color:var(--red);">변수 빌런</div>
       <span class="boss-avatar boss-hp-100" id="bossAvatar">🗿</span>
       <div class="player-hp-bar-bg"><div class="boss-hp-bar-fill" id="bossHpBar" style="width:100%"></div></div>
       <div class="player-hp-text">HP <span id="bossHpText">300</span> / <span id="bossMaxHpText">300</span></div>
@@ -343,7 +343,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div class="feedback-modal" id="feedbackModal">
     <div class="feedback-modal-header" id="feedbackModalHeader"></div>
     <div class="damage-info" id="damageInfo" style="display:none;">
-      <div class="damage-info-item boss-dmg" id="bossDmgInfo">⚔️ 보스 -0</div>
+      <div class="damage-info-item boss-dmg" id="bossDmgInfo">⚔️ 빌런 HP -0</div>
       <div class="damage-info-item player-dmg" id="playerDmgInfo">🛡️ 내 HP -0</div>
     </div>
     <div class="feedback-modal-text" id="feedbackModalText"></div>
@@ -635,7 +635,7 @@ async function processAnswer(answer, questionType) {
     const fbCode = (G.currentQuestion.questionType === 'CODE_INPUT') ? r.correctAnswer : null;
     const header = r.correct ? '✅ 정답! +' + r.scoreGained + '점' : '❌ 오답! 정답: ' + r.correctAnswer;
     const dmgDealt = r.correct ? (r.damageDealt || 0) : 0;
-    const dmgTaken = !r.correct ? 20 : 0; // 오답 시 보스 공격력 표시
+    const dmgTaken = !r.correct ? 20 : 0; // 오답 시 빌런 공격력 표시
 
     if (r.gameStatus === 'WIN') {
       G.gameOver = true; stopHpDrain();
@@ -673,7 +673,7 @@ function showFeedback(correct, header, text, code, btnText, btnAction, damageDea
   const dmgInfo = document.getElementById('damageInfo');
   if (damageDealt > 0 || damageTaken > 0) {
     dmgInfo.style.display = 'flex';
-    document.getElementById('bossDmgInfo').textContent = '⚔️ 보스 -' + (damageDealt || 0) + ' HP';
+    document.getElementById('bossDmgInfo').textContent = '⚔️ 빌런 HP -' + (damageDealt || 0) + ' HP';
     document.getElementById('playerDmgInfo').textContent = '🛡️ 내 HP -' + (damageTaken || 0);
   } else {
     dmgInfo.style.display = 'none';
@@ -724,22 +724,30 @@ function showStageClear(result) {
   stopHpDrain();
   const boss = result.nextBoss;
   if (!boss) return;
+  const currentBossEmoji = G.bossEmoji;
   const overlay = document.createElement('div');
   overlay.id = 'stageClearOverlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;text-align:center;padding:20px;';
   overlay.innerHTML = `
-    <div style="font-size:3.5rem;margin-bottom:14px">🎉</div>
-    <div style="font-family:Cinzel,serif;font-size:2rem;color:#fbbf24;font-weight:700;margin-bottom:6px">STAGE CLEAR!</div>
-    <div style="color:#94a3b8;margin-bottom:24px">다음 보스: ${boss.emoji} ${boss.name}</div>
+    <div style="font-size:3.5rem;margin-bottom:6px;animation:spin 0.5s ease">💥</div>
+    <div style="font-size:2.5rem;margin-bottom:10px;filter:grayscale(1) brightness(.4);transform:rotate(15deg);display:inline-block">${currentBossEmoji}</div>
+    <div style="font-family:Cinzel,serif;font-size:2rem;color:#fbbf24;font-weight:700;margin-bottom:4px">STAGE CLEAR!</div>
+    <div style="color:#f87171;font-size:.95rem;font-weight:700;margin-bottom:20px">💀 빌런을 처치했다!</div>
+    <div style="color:#94a3b8;margin-bottom:16px;font-size:.85rem">다음 빌런 등장: ${boss.emoji} ${boss.name}</div>
     <div style="background:#161e30;border:1px solid #2a3548;border-radius:12px;padding:20px 28px;margin-bottom:24px;max-width:360px;">
       <div style="font-size:3rem;margin-bottom:6px">${boss.emoji}</div>
       <div style="font-size:1.1rem;font-weight:700;color:#f87171">${boss.name}</div>
       <div style="font-size:.82rem;color:#64748b;margin-top:6px">${boss.description}</div>
       <div style="font-size:.8rem;color:#94a3b8;margin-top:8px">HP: ${boss.maxHp} / 공격력: ${boss.attackPower}</div>
     </div>
-    <button onclick="startNextStage(${JSON.stringify(boss).replace(/"/g,'&quot;')})" style="background:linear-gradient(135deg,#0ea5e9,#a78bfa);border:none;border-radius:10px;padding:12px 36px;color:white;font-size:.95rem;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;">
+    <button id="stageClearBtn" onclick="startNextStage(${JSON.stringify(boss).replace(/"/g,'&quot;')})" style="background:linear-gradient(135deg,#0ea5e9,#a78bfa);border:none;border-radius:10px;padding:12px 36px;color:white;font-size:.95rem;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;">
       스테이지 ${boss.stage} 시작 →
     </button>`;
+  // Enter 키로 스테이지 시작 버튼 클릭
+  setTimeout(() => {
+    const btn = document.getElementById('stageClearBtn');
+    if (btn) btn.focus();
+  }, 100);
   document.body.appendChild(overlay);
 }
 
@@ -760,7 +768,7 @@ function showEndScreen(isWin) {
   const titleEl = document.getElementById('endTitle');
   titleEl.textContent = isWin ? 'VICTORY!' : 'GAME OVER';
   titleEl.className = 'end-title ' + (isWin ? 'win' : 'lose');
-  document.getElementById('endSub').textContent = isWin ? '모든 보스를 물리쳤습니다! Java 마스터!' : '쓰러졌습니다. 다시 도전해보세요!';
+  document.getElementById('endSub').textContent = isWin ? '모든 빌런를 물리쳤습니다! Java 마스터!' : '쓰러졌습니다. 다시 도전해보세요!';
   document.getElementById('endScore').textContent = G.score.toLocaleString();
   document.getElementById('endStage').textContent = G.stage;
   document.getElementById('endHp').textContent = Math.max(0, G.playerHp);
