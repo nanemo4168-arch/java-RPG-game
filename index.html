@@ -16,7 +16,6 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(110,231,247,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(110,231,247,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
-
 .screen{display:none;}
 .screen.active{display:block;}
 .game-container{max-width:900px;margin:0 auto;padding:20px;position:relative;z-index:1;}
@@ -27,7 +26,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .title-logo{font-family:'Cinzel',serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
 .title-sub{font-size:.9rem;color:var(--text2);letter-spacing:.3em;text-transform:uppercase;margin-bottom:40px;}
 .boss-preview{display:flex;gap:16px;margin-bottom:40px;flex-wrap:wrap;justify-content:center;}
-.boss-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;text-align:center;width:150px;transition:transform .2s,border-color .2s;}
+.boss-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;text-align:center;width:150px;}
 .boss-card:hover{transform:none;border-color:var(--border);}
 .boss-card .boss-emoji{font-size:2rem;display:block;margin-bottom:6px;}
 .boss-card .boss-stage{font-size:.65rem;color:var(--accent);text-transform:uppercase;letter-spacing:.2em;}
@@ -65,8 +64,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .boss-avatar.shake{animation:bossShake .4s ease;}
 @keyframes bossShake{0%,100%{transform:translateX(0) rotate(0);}20%{transform:translateX(-8px) rotate(-3deg);}40%{transform:translateX(8px) rotate(3deg);}60%{transform:translateX(-5px) rotate(-2deg);}80%{transform:translateX(5px) rotate(2deg);}}
 .boss-hp-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#b91c1c,var(--red));transition:width .5s cubic-bezier(.25,.46,.45,.94);}
-.boss-hp-100{filter:none;}
-.boss-hp-75{filter:sepia(.3) saturate(1.2);}
+.boss-hp-100{filter:none;}.boss-hp-75{filter:sepia(.3) saturate(1.2);}
 .boss-hp-50{filter:sepia(.6) saturate(.8) brightness(.9);}
 .boss-hp-25{filter:grayscale(.5) sepia(.4) brightness(.7);}
 .boss-hp-dead{filter:grayscale(1) brightness(.5);transform:rotate(10deg) !important;}
@@ -127,18 +125,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .hint-box.show{display:block;animation:fadeIn .3s ease;}
 .enter-hint{font-size:.72rem;color:var(--text3);margin-left:auto;}
 
-/* 피드백 */
-.feedback-card{border-radius:12px;padding:14px 18px;margin-top:10px;display:none;animation:fadeIn .3s ease;position:sticky;bottom:10px;}.feedback-card.show{display:block;}
-.feedback-card.correct-fb{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);}
-.feedback-card.wrong-fb{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);}
-.feedback-header{font-size:.95rem;font-weight:700;margin-bottom:6px;}
-.feedback-card.correct-fb .feedback-header{color:var(--green);}
-.feedback-card.wrong-fb .feedback-header{color:var(--red);}
-.feedback-text{font-size:.83rem;color:var(--text2);line-height:1.7;}
-.feedback-code{font-family:'JetBrains Mono',monospace;font-size:.82rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin-top:8px;color:var(--green);}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-
-.next-btn-wrap{margin-top:14px;text-align:center;}
 
 /* 데미지 플로팅 */
 .damage-float{position:absolute;font-size:1.4rem;font-weight:900;pointer-events:none;animation:floatUp 1s ease forwards;z-index:10;}
@@ -148,8 +135,41 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 @keyframes floatUp{from{opacity:1;transform:translateY(0) scale(1);}to{opacity:0;transform:translateY(-60px) scale(.8);}}
 
 /* 콤보 토스트 */
-.combo-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:20px 36px;text-align:center;z-index:100;opacity:0;pointer-events:none;transition:all .3s;}
+.combo-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:20px 36px;text-align:center;z-index:400;opacity:0;pointer-events:none;transition:all .3s;}
 .combo-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+
+/* 피드백 모달 - 투명 오버레이, 문제 아래 고정 */
+.feedback-modal-overlay{display:none;position:fixed;inset:0;background:transparent;z-index:300;pointer-events:none;}
+.feedback-modal-overlay.show{display:block;}
+.feedback-modal{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:24px;
+  background:rgba(22,30,48,0.7);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-radius:16px;
+  padding:20px 24px;
+  max-width:520px;
+  width:92%;
+  animation:slideUp .25s ease;
+  pointer-events:all;
+}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.feedback-modal.correct-fb{border:2px solid var(--green);}
+.feedback-modal.wrong-fb{border:2px solid var(--red);}
+.feedback-modal-header{font-size:1.05rem;font-weight:700;margin-bottom:10px;}
+.feedback-modal.correct-fb .feedback-modal-header{color:var(--green);}
+.feedback-modal.wrong-fb .feedback-modal-header{color:var(--red);}
+.damage-info{display:flex;gap:12px;margin-bottom:12px;}
+.damage-info-item{flex:1;text-align:center;padding:7px 10px;border-radius:10px;font-size:.82rem;font-weight:700;}
+.damage-info-item.boss-dmg{background:rgba(110,231,247,.1);border:1px solid rgba(110,231,247,.3);color:var(--accent);}
+.damage-info-item.player-dmg{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--red);}
+.feedback-modal-text{font-size:.85rem;color:var(--text2);line-height:1.7;margin-bottom:12px;}
+.feedback-modal-code{font-family:'JetBrains Mono',monospace;font-size:.82rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin-bottom:12px;color:var(--green);}
+.feedback-modal-btn{width:100%;background:linear-gradient(135deg,#0ea5e9,var(--accent2));border:none;border-radius:10px;padding:11px;color:white;font-size:.92rem;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:opacity .2s;}
+.feedback-modal-btn:hover{opacity:.9;}
 
 /* 랭킹 */
 #screen-ranking{padding:40px 0;}
@@ -189,66 +209,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .end-stats{flex-direction:column;gap:16px;}
   .ranking-row{grid-template-columns:50px 1fr 80px 60px;}
 }
-/* 피드백 모달 */
-.feedback-modal-overlay {
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  z-index:300;
-  align-items:center;
-  justify-content:center;
-}
-.feedback-modal-overlay.show {
-  display:flex;
-}
-.feedback-modal {
-  background:var(--card);
-  border-radius:16px;
-  padding:24px 28px;
-  max-width:420px;
-  width:90%;
-  animation:fadeIn .25s ease;
-}
-.feedback-modal.correct-fb { border:2px solid var(--green); }
-.feedback-modal.wrong-fb { border:2px solid var(--red); }
-.feedback-modal-header {
-  font-size:1.1rem;
-  font-weight:700;
-  margin-bottom:10px;
-}
-.feedback-modal.correct-fb .feedback-modal-header { color:var(--green); }
-.feedback-modal.wrong-fb .feedback-modal-header { color:var(--red); }
-.feedback-modal-text {
-  font-size:.88rem;
-  color:var(--text2);
-  line-height:1.7;
-  margin-bottom:14px;
-}
-.feedback-modal-code {
-  font-family:'JetBrains Mono',monospace;
-  font-size:.82rem;
-  background:var(--bg);
-  border:1px solid var(--border);
-  border-radius:6px;
-  padding:8px 12px;
-  margin-bottom:14px;
-  color:var(--green);
-}
-.feedback-modal-btn {
-  width:100%;
-  background:linear-gradient(135deg,#0ea5e9,var(--accent2));
-  border:none;
-  border-radius:10px;
-  padding:12px;
-  color:white;
-  font-size:.95rem;
-  font-weight:700;
-  font-family:'Noto Sans KR',sans-serif;
-  cursor:pointer;
-  transition:opacity .2s;
-}
-.feedback-modal-btn:hover { opacity:.9; }
 </style>
 </head>
 <body>
@@ -257,7 +217,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <div id="screen-title" class="screen active">
 <div class="game-container">
   <div class="title-logo">Java RPG</div>
-<div class="title-sub">문제를 맞혀서 괴물을 물리치시오</div>
+  <div class="title-sub">문제를 맞혀서 괴물을 물리치시오</div>
   <div class="boss-preview">
     <div class="boss-card"><span class="boss-emoji">🗿</span><div class="boss-stage">Stage 1</div><div class="boss-name">변수 골렘</div></div>
     <div class="boss-card"><span class="boss-emoji">🐉</span><div class="boss-stage">Stage 2</div><div class="boss-name">객체 드래곤</div></div>
@@ -340,8 +300,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         </div>
         <div class="hint-box" id="hintBox"></div>
       </div>
-
-
     </div>
   </div>
 </div>
@@ -379,15 +337,21 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   </div>
 </div>
 </div>
+
 <!-- 피드백 모달 -->
 <div class="feedback-modal-overlay" id="feedbackModalOverlay">
   <div class="feedback-modal" id="feedbackModal">
     <div class="feedback-modal-header" id="feedbackModalHeader"></div>
+    <div class="damage-info" id="damageInfo" style="display:none;">
+      <div class="damage-info-item boss-dmg" id="bossDmgInfo">⚔️ 보스 -0</div>
+      <div class="damage-info-item player-dmg" id="playerDmgInfo">🛡️ 내 HP -0</div>
+    </div>
     <div class="feedback-modal-text" id="feedbackModalText"></div>
     <div class="feedback-modal-code" id="feedbackModalCode" style="display:none;"></div>
     <button class="feedback-modal-btn" id="feedbackModalBtn">다음 문제 →</button>
   </div>
 </div>
+
 <!-- 콤보 토스트 -->
 <div class="combo-toast" id="comboToast">
   <span style="font-size:2rem;display:block;margin-bottom:6px;" id="comboToastIcon"></span>
@@ -395,8 +359,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 </div>
 
 <script>
-  const API = 'https://rpg-game-backend-production.up.railway.app/api/game';
-  
+const API = 'https://rpg-game-backend-production.up.railway.app/api/game';
+
 let G = {
   playerId:null, nickname:'', playerHp:100, bossHp:0, bossMaxHp:0,
   stage:1, score:0, combo:0, questionNumber:0, totalQuestions:4,
@@ -404,32 +368,24 @@ let G = {
   timerInterval:null, timerSeconds:30, timerMax:30,
   hpDrainInterval:null,
   gameOver:false,
-  pendingStageClear:null  // 마지막 문제 후 스테이지 클리어 대기
+  pendingStageClear:null
 };
 
-// =============================================
-// HP 자동 감소 (느리게: 4초마다 1씩)
-// =============================================
+// HP 자동 감소 (4초마다 1씩)
 function startHpDrain() {
   stopHpDrain();
   G.hpDrainInterval = setInterval(() => {
     if (G.gameOver) return;
     G.playerHp = Math.max(0, G.playerHp - 1);
     updatePlayerHpDisplay();
-    if (G.playerHp <= 0) {
-      stopHpDrain(); stopTimer();
-      showEndScreen(false);
-    }
-  }, 4000); // 4초마다 1 감소
+    if (G.playerHp <= 0) { stopHpDrain(); stopTimer(); showEndScreen(false); }
+  }, 4000);
 }
-
 function stopHpDrain() {
   if (G.hpDrainInterval) { clearInterval(G.hpDrainInterval); G.hpDrainInterval = null; }
 }
 
-// =============================================
 // 타이머 (객관식 30초, 코드입력 60초)
-// =============================================
 function startTimer(isCode) {
   stopTimer();
   G.timerMax = isCode ? 60 : 30;
@@ -441,11 +397,9 @@ function startTimer(isCode) {
     if (G.timerSeconds <= 0) { stopTimer(); onTimerExpired(); }
   }, 1000);
 }
-
 function stopTimer() {
   if (G.timerInterval) { clearInterval(G.timerInterval); G.timerInterval = null; }
 }
-
 function updateTimerDisplay() {
   const pct = (G.timerSeconds / G.timerMax) * 100;
   const bar = document.getElementById('timerBar');
@@ -453,18 +407,15 @@ function updateTimerDisplay() {
   bar.className = 'timer-bar-fill ' + (pct > 60 ? 'time-ok' : pct > 30 ? 'time-warn' : 'time-danger');
   document.getElementById('timerText').textContent = G.timerSeconds + '초';
 }
-
 function onTimerExpired() {
   disableAllInputs();
   G.playerHp = Math.max(0, G.playerHp - 15);
   updatePlayerHpDisplay();
   shakePlayer();
-  showFeedback(false, '⏰ 시간 초과! -15 HP', '시간 안에 답하지 못했습니다.', null, '다음 문제 →', loadNextQuestion);
+  showFeedback(false, '⏰ 시간 초과! -15 HP', '시간 안에 답하지 못했습니다.', null, '다음 문제 →', loadNextQuestion, 0, 15);
 }
 
-// =============================================
 // HP 표시
-// =============================================
 function updatePlayerHpDisplay() {
   const pct = Math.max(0, G.playerHp);
   const bar = document.getElementById('playerHpBar');
@@ -478,7 +429,6 @@ function updatePlayerHpDisplay() {
   else if (pct > 0) avatar.textContent = '😵';
   else avatar.textContent = '💀';
 }
-
 function updateBossHpDisplay() {
   const pct = Math.max(0, (G.bossHp / G.bossMaxHp) * 100);
   document.getElementById('bossHpBar').style.width = pct + '%';
@@ -492,17 +442,12 @@ function updateBossHpDisplay() {
   else { avatar.className += 'boss-hp-dead'; avatar.textContent = '💀'; }
 }
 
-// =============================================
-// 화면 전환
-// =============================================
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
 }
 
-// =============================================
 // 게임 시작
-// =============================================
 async function startGame() {
   const nickname = document.getElementById('nicknameInput').value.trim();
   const errEl = document.getElementById('startError');
@@ -531,17 +476,14 @@ async function startGame() {
   }
 }
 
-// =============================================
 // 문제 로드
-// =============================================
 async function loadNextQuestion() {
   stopTimer();
   G.pendingStageClear = null;
+  document.getElementById('feedbackModalOverlay').classList.remove('show');
   document.getElementById('questionLoading').style.display = 'block';
   document.getElementById('questionContent').style.display = 'none';
-  document.getElementById('feedbackModalOverlay').classList.remove('show');
   document.getElementById('hintBox').className = 'hint-box';
-
   try {
     const res = await fetch(`${API}/question?playerId=${G.playerId}`);
     if (!res.ok) throw new Error();
@@ -554,53 +496,33 @@ async function loadNextQuestion() {
   }
 }
 
-// =============================================
 // 문제 렌더링
-// =============================================
 function renderQuestion(q) {
   document.getElementById('questionLoading').style.display = 'none';
   document.getElementById('questionContent').style.display = 'block';
-
   document.getElementById('stageBadge').textContent = 'STAGE ' + G.stage;
   document.getElementById('questionProgress').textContent = `문제 ${q.questionNumber} / ${q.totalQuestions}`;
   document.getElementById('scoreText').textContent = G.score.toLocaleString();
-
   document.getElementById('qConcept').textContent = q.concept;
   const diffEl = document.getElementById('qDiff');
   diffEl.className = 'tag tag-diff d' + q.difficulty;
   diffEl.textContent = ['','초급','중급','고급'][q.difficulty];
-
   const isCode = q.questionType === 'CODE_INPUT';
   document.getElementById('qTypeTag').style.display = isCode ? 'inline-block' : 'none';
-
-  // 문제 텍스트 렌더링 (\n 개행 처리)
   renderQuestionText(q.questionText);
-
   const mcArea = document.getElementById('multipleChoiceArea');
   const ciSection = document.getElementById('codeInputSection');
-
   if (isCode) {
-    // 코드 입력 모드
     mcArea.style.display = 'none';
     ciSection.style.display = 'block';
     const ta = document.getElementById('codeInputTextarea');
-    ta.value = '';
-    ta.disabled = false;
+    ta.value = ''; ta.disabled = false;
     document.getElementById('codeSubmitBtn').disabled = false;
-
-    // 힌트 설정
     const hintBtn = document.getElementById('hintBtn');
-    if (q.hint) {
-      hintBtn.style.display = 'inline-block';
-      document.getElementById('hintBox').textContent = q.hint;
-    } else {
-      hintBtn.style.display = 'none';
-    }
-
-    // 포커스
+    if (q.hint) { hintBtn.style.display = 'inline-block'; document.getElementById('hintBox').textContent = q.hint; }
+    else { hintBtn.style.display = 'none'; }
     setTimeout(() => ta.focus(), 100);
   } else {
-    // 객관식 모드
     mcArea.style.display = 'grid';
     ciSection.style.display = 'none';
     mcArea.innerHTML = '';
@@ -614,63 +536,58 @@ function renderQuestion(q) {
   }
 }
 
-// 문제 텍스트 렌더링 (코드블록 구분)
 function renderQuestionText(text) {
   const el = document.getElementById('qText');
   el.innerHTML = '';
-
   const parts = text.split(/\n\n+/);
   parts.forEach(part => {
     const trimmed = part.trim();
     if (!trimmed) return;
     if (trimmed.includes('\n') && (
-            trimmed.includes('{') || trimmed.includes('(') ||
-            trimmed.includes('class ') || trimmed.includes('public ') ||
-            trimmed.includes('___') || trimmed.includes('System.')
+      trimmed.includes('{') || trimmed.includes('(') ||
+      trimmed.includes('class ') || trimmed.includes('public ') ||
+      trimmed.includes('___') || trimmed.includes('System.')
     )) {
       const block = document.createElement('div');
       block.className = 'code-block';
       block.innerHTML = escHtml(trimmed).replace(/___/g,
-              '<span style="display:inline-block;min-width:80px;height:22px;background:#1e3a5f;border:2px solid #6ee7f7;border-radius:4px;vertical-align:middle;margin:0 4px;"></span>'
+        '<span style="display:inline-block;min-width:80px;height:22px;background:#1e3a5f;border:2px solid #6ee7f7;border-radius:4px;vertical-align:middle;margin:0 4px;"></span>'
       );
       el.appendChild(block);
     } else {
       const p = document.createElement('p');
       p.style.marginBottom = '8px';
       p.innerHTML = escHtml(trimmed).replace(/___/g,
-              '<span style="display:inline-block;min-width:80px;height:22px;background:#1e3a5f;border:2px solid #6ee7f7;border-radius:4px;vertical-align:middle;margin:0 4px;"></span>'
+        '<span style="display:inline-block;min-width:80px;height:22px;background:#1e3a5f;border:2px solid #6ee7f7;border-radius:4px;vertical-align:middle;margin:0 4px;"></span>'
       );
       el.appendChild(p);
     }
   });
 }
 
-function escHtml(s) {
-  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toggleHint() { document.getElementById('hintBox').classList.toggle('show'); }
 
-function toggleHint() {
-  const box = document.getElementById('hintBox');
-  box.classList.toggle('show');
-}
-
-// =============================================
-// Enter 키 자동 제출
-// =============================================
-document.addEventListener('DOMContentLoaded', () => {
+// Enter 키 처리 (코드입력 제출 + 모달 다음문제)
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' || e.shiftKey) return;
+  // 모달이 열려있으면 모달 버튼 클릭
+  const overlay = document.getElementById('feedbackModalOverlay');
+  if (overlay.classList.contains('show')) {
+    e.preventDefault();
+    document.getElementById('feedbackModalBtn').click();
+    return;
+  }
+  // 코드입력 textarea에 포커스 있으면 제출
   const ta = document.getElementById('codeInputTextarea');
-  ta.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      const btn = document.getElementById('codeSubmitBtn');
-      if (!btn.disabled) submitCodeAnswer();
-    }
-  });
+  if (document.activeElement === ta) {
+    e.preventDefault();
+    const btn = document.getElementById('codeSubmitBtn');
+    if (!btn.disabled) submitCodeAnswer();
+  }
 });
 
-// =============================================
 // 답변 제출
-// =============================================
 function disableAllInputs() {
   document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
   const csb = document.getElementById('codeSubmitBtn');
@@ -680,8 +597,7 @@ function disableAllInputs() {
 }
 
 async function submitAnswer(answer, clickedBtn) {
-  stopTimer();
-  disableAllInputs();
+  stopTimer(); disableAllInputs();
   await processAnswer(answer, 'MULTIPLE_CHOICE');
 }
 
@@ -689,8 +605,7 @@ async function submitCodeAnswer() {
   const ta = document.getElementById('codeInputTextarea');
   const code = ta.value.trim();
   if (!code) { ta.focus(); return; }
-  stopTimer();
-  disableAllInputs();
+  stopTimer(); disableAllInputs();
   await processAnswer(code, 'CODE_INPUT');
 }
 
@@ -712,43 +627,32 @@ async function processAnswer(answer, questionType) {
     document.getElementById('questionProgress').textContent = `문제 ${r.questionNumber} / ${r.totalQuestions}`;
     updateComboDisplay(r.comboCount);
 
-    // 답안 강조 (객관식)
-    if (G.currentQuestion.questionType !== 'CODE_INPUT') {
-      highlightAnswers(answer, r.correctAnswer);
-    }
-
-    // 애니메이션
+    if (G.currentQuestion.questionType !== 'CODE_INPUT') highlightAnswers(answer, r.correctAnswer);
     if (r.correct && r.damageDealt > 0) { showDamageFloat('-' + r.damageDealt, 'to-boss'); shakeBoss(); }
     if (!r.correct) { shakePlayer(); showDamageFloat('-HP', 'to-player'); }
-
     if (r.comboEffect) showComboToast(r.comboEffect);
 
-// 피드백 모달 표시
     const fbCode = (G.currentQuestion.questionType === 'CODE_INPUT') ? r.correctAnswer : null;
-    const header = r.correct
-            ? '✅ 정답! +' + r.scoreGained + '점'
-            : '❌ 오답! 정답: ' + r.correctAnswer;
+    const header = r.correct ? '✅ 정답! +' + r.scoreGained + '점' : '❌ 오답! 정답: ' + r.correctAnswer;
+    const dmgDealt = r.correct ? (r.damageDealt || 0) : 0;
+    const dmgTaken = !r.correct ? 20 : 0; // 오답 시 보스 공격력 표시
 
     if (r.gameStatus === 'WIN') {
       G.gameOver = true; stopHpDrain();
-      showFeedback(r.correct, header, r.explanation, fbCode, '🏆 게임 클리어!', () => showEndScreen(true));
+      showFeedback(r.correct, header, r.explanation, fbCode, '🏆 게임 클리어!', () => showEndScreen(true), dmgDealt, dmgTaken);
     } else if (r.gameStatus === 'LOSE') {
       G.gameOver = true; stopHpDrain();
-      showFeedback(r.correct, header, r.explanation, fbCode, '💀 결과 보기', () => showEndScreen(false));
+      showFeedback(r.correct, header, r.explanation, fbCode, '💀 결과 보기', () => showEndScreen(false), dmgDealt, dmgTaken);
     } else if (r.gameStatus === 'STAGE_CLEAR') {
-      showFeedback(r.correct, header, r.explanation, fbCode, '🎉 스테이지 클리어 확인 →', () => showStageClear(r));
+      showFeedback(r.correct, header, r.explanation, fbCode, '🎉 스테이지 클리어 확인 →', () => showStageClear(r), dmgDealt, dmgTaken);
     } else {
-      showFeedback(r.correct, header, r.explanation, fbCode, '다음 문제 →', loadNextQuestion);
+      showFeedback(r.correct, header, r.explanation, fbCode, '다음 문제 →', loadNextQuestion, dmgDealt, dmgTaken);
     }
-
   } catch(e) {
     disableAllInputs();
     alert('오류: ' + e.message);
   }
 }
-
-// 다음 버튼 기본 핸들러 (동적으로 교체됨)
-function handleNextButton() { loadNextQuestion(); }
 
 function highlightAnswers(selected, correct) {
   document.querySelectorAll('.answer-btn').forEach((btn, i) => {
@@ -758,31 +662,43 @@ function highlightAnswers(selected, correct) {
   });
 }
 
-function showFeedback(correct, header, text, code, btnText, btnAction) {
+function showFeedback(correct, header, text, code, btnText, btnAction, damageDealt, damageTaken) {
   const overlay = document.getElementById('feedbackModalOverlay');
   const modal = document.getElementById('feedbackModal');
   modal.className = 'feedback-modal ' + (correct ? 'correct-fb' : 'wrong-fb');
   document.getElementById('feedbackModalHeader').textContent = header;
   document.getElementById('feedbackModalText').textContent = text || '';
+
+  // 피해량 표시
+  const dmgInfo = document.getElementById('damageInfo');
+  if (damageDealt > 0 || damageTaken > 0) {
+    dmgInfo.style.display = 'flex';
+    document.getElementById('bossDmgInfo').textContent = '⚔️ 보스 -' + (damageDealt || 0) + ' HP';
+    document.getElementById('playerDmgInfo').textContent = '🛡️ 내 HP -' + (damageTaken || 0);
+  } else {
+    dmgInfo.style.display = 'none';
+  }
+
   const codeEl = document.getElementById('feedbackModalCode');
   if (code) { codeEl.style.display = 'block'; codeEl.textContent = '정답: ' + code; }
   else { codeEl.style.display = 'none'; }
+
   const btn = document.getElementById('feedbackModalBtn');
   btn.textContent = btnText || '다음 문제 →';
   btn.onclick = () => { overlay.classList.remove('show'); btnAction(); };
   overlay.classList.add('show');
+  // 모달 버튼에 포커스 (Enter 즉시 가능하도록)
+  setTimeout(() => btn.focus(), 50);
 }
 
 function shakeBoss() {
   const el = document.getElementById('bossAvatar');
   el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
 }
-
 function shakePlayer() {
   const el = document.getElementById('playerAvatar');
   el.classList.remove('hurt'); void el.offsetWidth; el.classList.add('hurt');
 }
-
 function showDamageFloat(text, type) {
   const wrap = document.querySelector('.battle-area');
   const el = document.createElement('div');
@@ -792,12 +708,10 @@ function showDamageFloat(text, type) {
   wrap.appendChild(el);
   setTimeout(() => el.remove(), 1000);
 }
-
 function updateComboDisplay(combo) {
   const el = document.getElementById('comboDisplay');
   el.innerHTML = combo >= 2 ? `<div class="combo-badge">🔥 ${combo} COMBO!</div>` : '';
 }
-
 function showComboToast(effect) {
   const toast = document.getElementById('comboToast');
   document.getElementById('comboToastIcon').textContent = effect.type === 'HEAL' ? '💚' : '🔥';
@@ -806,14 +720,13 @@ function showComboToast(effect) {
   setTimeout(() => toast.classList.remove('show'), 1800);
 }
 
-// 스테이지 클리어 오버레이 (피드백 확인 후 표시)
 function showStageClear(result) {
   stopHpDrain();
   const boss = result.nextBoss;
   if (!boss) return;
   const overlay = document.createElement('div');
   overlay.id = 'stageClearOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;text-align:center;padding:20px;';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;text-align:center;padding:20px;';
   overlay.innerHTML = `
     <div style="font-size:3.5rem;margin-bottom:14px">🎉</div>
     <div style="font-family:Cinzel,serif;font-size:2rem;color:#fbbf24;font-weight:700;margin-bottom:6px">STAGE CLEAR!</div>
@@ -833,10 +746,7 @@ function showStageClear(result) {
 function startNextStage(boss) {
   const overlay = document.getElementById('stageClearOverlay');
   if (overlay) overlay.remove();
-  G.stage = boss.stage;
-  G.bossHp = boss.maxHp;
-  G.bossMaxHp = boss.maxHp;
-  G.bossEmoji = boss.emoji;
+  G.stage = boss.stage; G.bossHp = boss.maxHp; G.bossMaxHp = boss.maxHp; G.bossEmoji = boss.emoji;
   document.getElementById('bossNameDisplay').textContent = boss.name;
   document.getElementById('bossMaxHpText').textContent = boss.maxHp;
   updateBossHpDisplay();
@@ -885,14 +795,11 @@ function goBackFromRanking() {
   if (G.playerId && G.playerHp > 0 && !G.gameOver) showScreen('game');
   else showScreen('title');
 }
-
 function confirmQuit() {
   if (confirm('게임을 나가면 진행 상황이 사라집니다. 나가시겠습니까?')) {
-    stopHpDrain(); stopTimer(); G.gameOver = true;
-    showScreen('title');
+    stopHpDrain(); stopTimer(); G.gameOver = true; showScreen('title');
   }
 }
-
 function restartGame() {
   stopHpDrain(); stopTimer();
   G = {playerId:null,nickname:'',playerHp:100,bossHp:0,bossMaxHp:0,stage:1,score:0,combo:0,questionNumber:0,totalQuestions:4,currentQuestion:null,bossEmoji:'🗿',timerInterval:null,timerSeconds:30,timerMax:30,hpDrainInterval:null,gameOver:false,pendingStageClear:null};
