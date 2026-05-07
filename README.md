@@ -852,30 +852,7 @@ git commit -m "feat: 새로운 기능 추가"
 git push origin feature/새로운-기능
 
 # 5. Pull Request 생성
-```
 
----
 
-## 📄 라이선스
-
-MIT License - 자유롭게 사용, 수정, 배포 가능
-
----
-
-## 📧 연락처
-
-- **개발자**: nanemo4168-arch
-- **GitHub**: https://github.com/nanemo4168-arch
-- **이슈 리포트**: https://github.com/nanemo4168-arch/java-RPG-game/issues
-
----
-
-## 🙏 감사의 말
-
-- 백엔드 개발팀
-- Java 커뮤니티
-- 모든 테스터분들
-
----
 
 **Happy Coding! 🚀 Java 마스터를 향해 화이팅! ⚔️**
